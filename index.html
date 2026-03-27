@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Baran | Red Team Operator</title>
+<title>Baran | Cyber Intelligence Panel</title>
 
 <style>
 body {
@@ -13,7 +13,7 @@ body {
     font-family: monospace;
 }
 
-/* MATRIX BACKGROUND */
+/* MATRIX */
 canvas {
     position: fixed;
     top: 0;
@@ -21,27 +21,21 @@ canvas {
     z-index: -1;
 }
 
-/* HEADER */
-header {
+/* LOGIN */
+.login {
     text-align: center;
-    padding: 80px 20px;
+    margin-top: 150px;
 }
 
-h1 {
-    font-size: 45px;
+input {
+    display: block;
+    margin: 10px auto;
+    padding: 10px;
+    background: black;
+    border: 1px solid #00ff9f;
+    color: #00ff9f;
 }
 
-/* TERMINAL */
-.terminal {
-    background: #020617;
-    padding: 20px;
-    border-radius: 10px;
-    margin: 20px auto;
-    max-width: 800px;
-    box-shadow: 0 0 20px #00ff9f;
-}
-
-/* BUTTON */
 button {
     background: #00ff9f;
     border: none;
@@ -49,11 +43,31 @@ button {
     cursor: pointer;
 }
 
-/* CARD */
+/* PANEL */
+.panel {
+    display: none;
+    padding: 20px;
+}
+
 .card {
     border: 1px solid #00ff9f;
-    padding: 15px;
-    margin: 15px;
+    margin: 10px;
+    padding: 10px;
+}
+
+/* TERMINAL */
+.terminal {
+    background: #020617;
+    padding: 10px;
+    height: 200px;
+    overflow: auto;
+}
+
+/* GRAPH */
+.bar {
+    height: 20px;
+    background: #00ff9f;
+    margin: 5px 0;
 }
 </style>
 </head>
@@ -62,49 +76,58 @@ button {
 
 <canvas id="matrix"></canvas>
 
-<header>
-    <h1>Baran Kaya</h1>
-    <p>> Red Team Operator | Penetration Tester</p>
-</header>
-
-<div class="terminal">
-    <p id="typing"></p>
+<!-- LOGIN -->
+<div class="login" id="loginBox">
+    <h1>> Secure Access</h1>
+    <input id="user" placeholder="username">
+    <input id="pass" type="password" placeholder="password">
+    <button onclick="login()">Login</button>
 </div>
 
-<section style="text-align:center;">
-    <button onclick="downloadCV()">CV İndir</button>
-</section>
+<!-- PANEL -->
+<div class="panel" id="panel">
 
-<section>
-    <h2>🛠️ Pentest Yetkinlikleri</h2>
+    <h1>> Cyber Dashboard</h1>
 
-    <div class="card">
-        Web Pentest (XSS, IDOR, SQLi)
-    </div>
+    <div class="card terminal" id="terminal"></div>
 
     <div class="card">
-        Network Pentest (Nmap, SMB, TLS)
+        <h3>Port Risk Analysis</h3>
+        <div class="bar" style="width:90%">Port 80</div>
+        <div class="bar" style="width:70%">Port 443</div>
+        <div class="bar" style="width:50%">Port 22</div>
     </div>
 
-</section>
+    <button onclick="report()">View Report</button>
+    <button onclick="logout()">Logout</button>
+
+</div>
+
+<!-- REPORT -->
+<div class="panel" id="reportPanel">
+
+    <h1>> Pentest Report</h1>
+
+    <div class="card">✔ XSS vulnerability found</div>
+    <div class="card">✔ IDOR vulnerability found</div>
+    <div class="card">✔ Weak TLS detected</div>
+
+    <button onclick="back()">Back</button>
+
+</div>
 
 <script>
-/* MATRIX EFFECT */
+/* MATRIX */
 const canvas = document.getElementById("matrix");
 const ctx = canvas.getContext("2d");
 
 canvas.height = window.innerHeight;
 canvas.width = window.innerWidth;
 
-let letters = "01";
-letters = letters.split("");
-
+let letters = "01".split("");
 let fontSize = 14;
 let columns = canvas.width / fontSize;
-
-let drops = [];
-for (let x = 0; x < columns; x++)
-    drops[x] = 1;
+let drops = Array(Math.floor(columns)).fill(1);
 
 function draw() {
     ctx.fillStyle = "rgba(0,0,0,0.05)";
@@ -125,22 +148,56 @@ function draw() {
 }
 setInterval(draw, 33);
 
-/* TYPING EFFECT */
-let text = "> Initializing penetration test...\n> Scanning target...\n> Vulnerabilities found: XSS, IDOR\n> Access Granted...";
-let i = 0;
-
-function typing() {
-    if (i < text.length) {
-        document.getElementById("typing").innerHTML += text.charAt(i);
-        i++;
-        setTimeout(typing, 30);
+/* LOGIN */
+function login() {
+    if (user.value === "admin" && pass.value === "1234") {
+        loginBox.style.display = "none";
+        panel.style.display = "block";
+        startScan();
+    } else {
+        alert("Access Denied");
     }
 }
-typing();
 
-/* CV DOWNLOAD */
-function downloadCV() {
-    alert("CV eklemek için repo içine cv.pdf yükle");
+/* NMAP SIMULATION */
+function startScan() {
+    let output = [
+        "Starting Nmap 7.95...",
+        "Scanning target 192.168.1.1",
+        "PORT   STATE SERVICE",
+        "22/tcp open  ssh",
+        "80/tcp open  http",
+        "443/tcp open https",
+        "Vulnerability: XSS detected",
+        "Vulnerability: IDOR detected",
+        "Scan complete."
+    ];
+
+    let i = 0;
+    let term = document.getElementById("terminal");
+
+    let interval = setInterval(() => {
+        term.innerHTML += output[i] + "<br>";
+        term.scrollTop = term.scrollHeight;
+        i++;
+        if (i >= output.length) clearInterval(interval);
+    }, 500);
+}
+
+/* REPORT */
+function report() {
+    panel.style.display = "none";
+    reportPanel.style.display = "block";
+}
+
+function back() {
+    reportPanel.style.display = "none";
+    panel.style.display = "block";
+}
+
+function logout() {
+    panel.style.display = "none";
+    loginBox.style.display = "block";
 }
 </script>
 
