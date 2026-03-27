@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Baran | Red Team Operator</title>
+
+<style>
+body {
+    margin: 0;
+    background: black;
+    color: #00ff9f;
+    font-family: monospace;
+}
+
+/* MATRIX BACKGROUND */
+canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: -1;
+}
+
+/* HEADER */
+header {
+    text-align: center;
+    padding: 80px 20px;
+}
+
+h1 {
+    font-size: 45px;
+}
+
+/* TERMINAL */
+.terminal {
+    background: #020617;
+    padding: 20px;
+    border-radius: 10px;
+    margin: 20px auto;
+    max-width: 800px;
+    box-shadow: 0 0 20px #00ff9f;
+}
+
+/* BUTTON */
+button {
+    background: #00ff9f;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+}
+
+/* CARD */
+.card {
+    border: 1px solid #00ff9f;
+    padding: 15px;
+    margin: 15px;
+}
+</style>
+</head>
+
+<body>
+
+<canvas id="matrix"></canvas>
+
+<header>
+    <h1>Baran Kaya</h1>
+    <p>> Red Team Operator | Penetration Tester</p>
+</header>
+
+<div class="terminal">
+    <p id="typing"></p>
+</div>
+
+<section style="text-align:center;">
+    <button onclick="downloadCV()">CV İndir</button>
+</section>
+
+<section>
+    <h2>🛠️ Pentest Yetkinlikleri</h2>
+
+    <div class="card">
+        Web Pentest (XSS, IDOR, SQLi)
+    </div>
+
+    <div class="card">
+        Network Pentest (Nmap, SMB, TLS)
+    </div>
+
+</section>
+
+<script>
+/* MATRIX EFFECT */
+const canvas = document.getElementById("matrix");
+const ctx = canvas.getContext("2d");
+
+canvas.height = window.innerHeight;
+canvas.width = window.innerWidth;
+
+let letters = "01";
+letters = letters.split("");
+
+let fontSize = 14;
+let columns = canvas.width / fontSize;
+
+let drops = [];
+for (let x = 0; x < columns; x++)
+    drops[x] = 1;
+
+function draw() {
+    ctx.fillStyle = "rgba(0,0,0,0.05)";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    ctx.fillStyle = "#00ff9f";
+    ctx.font = fontSize + "px monospace";
+
+    for (let i = 0; i < drops.length; i++) {
+        let text = letters[Math.floor(Math.random() * letters.length)];
+        ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+        if (drops[i] * fontSize > canvas.height && Math.random() > 0.95)
+            drops[i] = 0;
+
+        drops[i]++;
+    }
+}
+setInterval(draw, 33);
+
+/* TYPING EFFECT */
+let text = "> Initializing penetration test...\n> Scanning target...\n> Vulnerabilities found: XSS, IDOR\n> Access Granted...";
+let i = 0;
+
+function typing() {
+    if (i < text.length) {
+        document.getElementById("typing").innerHTML += text.charAt(i);
+        i++;
+        setTimeout(typing, 30);
+    }
+}
+typing();
+
+/* CV DOWNLOAD */
+function downloadCV() {
+    alert("CV eklemek için repo içine cv.pdf yükle");
+}
+</script>
+
+</body>
+</html>
